@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}AI-асистент{% endblock %}
+{% block content %}
+<h1>AI-асистент</h1>
+<p class="small">Шкільний асистент на базі Anthropic Claude. Відповіді приходять асинхронно — оновіть сторінку через кілька секунд.</p>
+
+<div class="chat">
+  <aside class="sessions card">
+    <h3>Розмови</h3>
+    <p><a class="btn btn-sm" href="{% url 'ai_assistant:chat' %}">+ Нова</a></p>
+    <ul>
+      {% for s in sessions %}
+        <li><a href="{% url 'ai_assistant:chat' s.pk %}">{{ s.title|default:"Без теми"|truncatechars:30 }}</a></li>
+      {% empty %}<li class="small">Немає розмов</li>{% endfor %}
+    </ul>
+  </aside>
+
+  <section class="messages-pane">
+    {% for m in history %}
+      <div class="msg msg-{{ m.role }}">
+        <div class="small">{{ m.get_role_display }} · {{ m.created_at|date:"H:i" }}</div>
+        {{ m.content|linebreaks }}
+      </div>
+    {% empty %}
+      <p class="small">Напишіть перше повідомлення нижче.</p>
+    {% endfor %}
+
+    <form method="post" style="margin-top: 16px;">
+      {% csrf_token %}
+      <div class="form-row">
+        <label>Ваше повідомлення</label>
+        <textarea name="message" rows="3" required></textarea>
+      </div>
+      <button class="btn" type="submit">Надіслати</button>
+    </form>
+  </section>
+</div>
+{% endblock %}

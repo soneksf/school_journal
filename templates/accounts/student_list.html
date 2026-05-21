@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Учні{% endblock %}
+{% block content %}
+<h1>Учні</h1>
+<form method="get" class="card" style="display:flex; gap:8px; align-items:flex-end;">
+  <div class="form-row" style="flex:1">
+    <label>Пошук за прізвищем</label>
+    <input type="text" name="q" value="{{ request.GET.q }}">
+  </div>
+  <button class="btn" type="submit">Шукати</button>
+</form>
+
+<table>
+  <thead><tr><th>ПІБ</th><th>Клас</th><th>Особова справа</th><th></th></tr></thead>
+  <tbody>
+    {% for s in students %}
+      <tr>
+        <td>{{ s.user.full_name_uk }}</td>
+        <td>{{ s.school_class.short_name|default:"—" }}</td>
+        <td>{{ s.student_id }}</td>
+        <td>
+          <a href="{% url 'accounts:student_detail' s.pk %}" class="btn btn-sm">Профіль</a>
+          <a href="{% url 'grades:student_report' s.pk %}" class="btn btn-sm btn-secondary">Звіт</a>
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="4">Учнів не знайдено</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if page_obj and page_obj.has_other_pages %}
+  <p class="small">
+    {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">←</a>{% endif %}
+    Сторінка {{ page_obj.number }} з {{ paginator.num_pages }}
+    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">→</a>{% endif %}
+  </p>
+{% endif %}
+{% endblock %}

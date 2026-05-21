@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Шкільний журнал{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a href="{% url 'school_core:dashboard' %}" class="brand">📘 Шкільний журнал</a>
+    {% if user.is_authenticated %}
+      <nav class="nav">
+        <a href="{% url 'school_core:dashboard' %}">Головна</a>
+        {% if user.is_teacher or user.is_superuser %}
+          <a href="{% url 'accounts:student_list' %}">Учні</a>
+          <a href="{% url 'school_core:class_list' %}">Класи</a>
+          <a href="{% url 'grades:grade_create' %}">+ Оцінка</a>
+          <a href="{% url 'attendance:absence_create' %}">+ Пропуск</a>
+          <a href="{% url 'ai_assistant:insight_list' %}">AI-аналіз</a>
+        {% endif %}
+        <a href="{% url 'grades:grade_list' %}">Оцінки</a>
+        <a href="{% url 'attendance:absence_list' %}">Пропуски</a>
+        <a href="{% url 'ai_assistant:chat' %}">Асистент</a>
+        <a href="{% url 'notifications:list' %}" class="bell">
+          🔔
+          {% if unread_notifications %}<span class="badge">{{ unread_notifications }}</span>{% endif %}
+        </a>
+        <a href="{% url 'accounts:profile_edit' %}">{{ user.full_name_uk }}</a>
+        <form action="{% url 'accounts:logout' %}" method="post" class="inline">
+          {% csrf_token %}<button type="submit" class="linklike">Вийти</button>
+        </form>
+      </nav>
+    {% endif %}
+  </div>
+</header>
+
+<main class="wrap content">
+  {% if messages %}
+    <ul class="messages">
+      {% for m in messages %}<li class="m m-{{ m.tags }}">{{ m }}</li>{% endfor %}
+    </ul>
+  {% endif %}
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="bot"><div class="wrap small">© Шкільний журнал · Django + AI</div></footer>
+</body>
+</html>

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Пропуски{% endblock %}
+{% block content %}
+<h1>Пропуски</h1>
+{% if user.is_teacher %}
+  <a class="btn" href="{% url 'attendance:absence_create' %}">+ Зафіксувати пропуск</a>
+{% endif %}
+
+<table>
+  <thead>
+    <tr><th>Дата</th><th>Учень</th><th>Предмет</th><th>Причина</th>
+        <th>Поважна</th><th>Зафіксував</th><th>Коментар</th></tr>
+  </thead>
+  <tbody>
+    {% for a in absences %}
+      <tr>
+        <td>{{ a.date }}</td>
+        <td>{{ a.student.user.full_name_uk }}</td>
+        <td>{{ a.subject.name|default:"—" }}</td>
+        <td>{{ a.get_reason_display }}</td>
+        <td>{% if a.is_excused %}✓{% else %}✗{% endif %}</td>
+        <td>{{ a.recorded_by.user.full_name_uk|default:"—" }}</td>
+        <td>{{ a.note|default:"—" }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="7">Пропусків не зафіксовано.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

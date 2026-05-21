@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Адмін-кабінет{% endblock %}
+{% block content %}
+<h1>Адміністрування</h1>
+<div class="row">
+  <div class="col card"><h3>Управління</h3>
+    <p><a class="btn" href="/admin/">Django Admin</a></p>
+    <p><a href="{% url 'accounts:student_list' %}">Учні</a></p>
+    <p><a href="{% url 'accounts:teacher_list' %}">Вчителі</a></p>
+    <p><a href="{% url 'school_core:class_list' %}">Класи</a></p>
+  </div>
+</div>
+{% endblock %}

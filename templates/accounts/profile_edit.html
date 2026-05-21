@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Профіль{% endblock %}
+{% block content %}
+<h1>Мій профіль</h1>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  <div class="card">
+    <h3>Особисті дані</h3>
+    {% for field in user_form %}
+      <div class="form-row">
+        <label>{{ field.label }}</label>{{ field }}{{ field.errors }}
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if role_form %}
+    <div class="card">
+      <h3>Дані ролі ({{ user.get_role_display }})</h3>
+      {% for field in role_form %}
+        <div class="form-row">
+          <label>{{ field.label }}</label>{{ field }}{{ field.errors }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <button type="submit" class="btn">Зберегти</button>
+  <a href="{% url 'accounts:password_change' %}" class="btn btn-secondary">Змінити пароль</a>
+</form>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}AI-аналізи{% endblock %}
+{% block content %}
+<h1>AI-аналізи учнів</h1>
+<p class="small">
+  Інструмент аналізує оцінки та пропуски за допомогою Anthropic Claude
+  та формує висновки для класного керівника.
+</p>
+
+<table>
+  <thead><tr><th>Дата</th><th>Учень</th><th>Статус</th><th>Ризик</th><th>Запитав</th><th></th></tr></thead>
+  <tbody>
+    {% for i in insights %}
+      <tr>
+        <td>{{ i.created_at|date:"d.m.Y H:i" }}</td>
+        <td>{{ i.student.user.full_name_uk }}</td>
+        <td>{{ i.get_status_display }}</td>
+        <td><span class="risk-{{ i.risk_level }}">{{ i.get_risk_level_display }}</span></td>
+        <td>{{ i.requested_by.full_name_uk|default:"—" }}</td>
+        <td><a class="btn btn-sm" href="{% url 'ai_assistant:insight_detail' i.pk %}">Відкрити</a></td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="6">Аналізів ще немає. Запит можна сформувати з картки учня.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

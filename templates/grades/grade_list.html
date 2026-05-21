@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Оцінки{% endblock %}
+{% block content %}
+<h1>Оцінки</h1>
+{% if user.is_teacher %}<a class="btn" href="{% url 'grades:grade_create' %}">+ Нова оцінка</a>{% endif %}
+
+<table>
+  <thead>
+    <tr><th>Дата</th><th>Учень</th><th>Предмет</th><th>Бал</th>
+        <th>Тип</th><th>Вчитель</th><th>Коментар</th><th></th></tr>
+  </thead>
+  <tbody>
+    {% for g in grades %}
+      <tr>
+        <td>{{ g.date }}</td>
+        <td>{{ g.student.user.full_name_uk }}</td>
+        <td>{{ g.subject.name }}</td>
+        <td>
+          <span class="grade-pill {% if g.value <= 3 %}grade-low{% elif g.value <= 8 %}grade-mid{% else %}grade-high{% endif %}">
+            {{ g.value }}
+          </span>
+        </td>
+        <td>{{ g.get_kind_display }}</td>
+        <td>{{ g.teacher.user.full_name_uk }}</td>
+        <td>{{ g.comment|default:"—" }}</td>
+        <td>
+          {% if user.is_teacher and g.teacher_id == user.teacher_profile.pk %}
+            <a class="btn btn-sm btn-secondary" href="{% url 'grades:grade_update' g.pk %}">Редагувати</a>
+          {% endif %}
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="8">Оцінок ще немає.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if page_obj and page_obj.has_other_pages %}
+  <p class="small">
+    {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}">←</a>{% endif %}
+    Сторінка {{ page_obj.number }} з {{ paginator.num_pages }}
+    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}">→</a>{% endif %}
+  </p>
+{% endif %}
+{% endblock %}

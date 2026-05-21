@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Вхід · Шкільний журнал{% endblock %}
+{% block content %}
+<div class="card" style="max-width: 420px; margin: 40px auto;">
+  <h2>Вхід до журналу</h2>
+  <form method="post">
+    {% csrf_token %}
+    {% for field in form %}
+      <div class="form-row">
+        <label>{{ field.label }}</label>
+        {{ field }}
+        {{ field.errors }}
+      </div>
+    {% endfor %}
+    {% if form.non_field_errors %}
+      <ul class="errorlist">{% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}</ul>
+    {% endif %}
+    <button type="submit" class="btn">Увійти</button>
+    <a href="{% url 'accounts:register' %}" class="btn btn-secondary">Реєстрація</a>
+  </form>
+</div>
+{% endblock %}

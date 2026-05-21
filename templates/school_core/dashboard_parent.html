@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Кабінет батьків{% endblock %}
+{% block content %}
+<h1>Доброго дня, {{ user.first_name }}!</h1>
+<p>Інформація про ваших дітей:</p>
+
+<div class="row">
+  {% for child in children %}
+    <div class="col card">
+      <h3>{{ child.user.full_name_uk }}</h3>
+      <p class="small">Клас: {{ child.school_class.short_name|default:"—" }}</p>
+      <p>
+        <a class="btn btn-sm" href="{% url 'grades:student_report' child.pk %}">Оцінки</a>
+        <a class="btn btn-sm btn-secondary" href="{% url 'accounts:student_detail' child.pk %}">Профіль</a>
+      </p>
+    </div>
+  {% empty %}
+    <p>Записів про дітей не знайдено. Зверніться до класного керівника.</p>
+  {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}AI-аналіз: {{ insight.student.user.full_name_uk }}{% endblock %}
+{% block content %}
+<h1>AI-аналіз учня</h1>
+<p class="small">
+  <strong>{{ insight.student.user.full_name_uk }}</strong> ·
+  Створено: {{ insight.created_at|date:"d.m.Y H:i" }} ·
+  Статус: {{ insight.get_status_display }}
+</p>
+
+{% if insight.status == "pending" %}
+  <div class="card">
+    <p>⏳ Аналіз триває. Оновіть сторінку через хвилину.</p>
+    <p class="small">Запит обробляється у фоновій задачі Celery, яка викликає Anthropic API.</p>
+  </div>
+{% elif insight.status == "failed" %}
+  <div class="card">
+    <h3>❌ Помилка</h3>
+    <p>{{ insight.error_message }}</p>
+  </div>
+{% else %}
+  <div class="card">
+    <h3>Загальний висновок</h3>
+    <p><strong>Рівень ризику:</strong>
+       <span class="risk-{{ insight.risk_level }}">{{ insight.get_risk_level_display }}</span></p>
+    <p>{{ insight.summary|linebreaks }}</p>
+  </div>
+
+  <div class="row">
+    <div class="col card">
+      <h3>✅ Сильні сторони</h3>
+      <p>{{ insight.strengths|linebreaks }}</p>
+    </div>
+    <div class="col card">
+      <h3>⚠️ Зони уваги</h3>
+      <p>{{ insight.concerns|linebreaks }}</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>📌 Рекомендації</h3>
+    <p>{{ insight.recommendations|linebreaks }}</p>
+  </div>
+{% endif %}
+
+<p>
+  <a class="btn btn-secondary" href="{% url 'ai_assistant:insight_list' %}">← До списку</a>
+  <a class="btn btn-secondary" href="{% url 'accounts:student_detail' insight.student.pk %}">Профіль учня</a>
+</p>
+{% endblock %}

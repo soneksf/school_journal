@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Вчителі{% endblock %}
+{% block content %}
+<h1>Вчителі</h1>
+<table>
+  <thead><tr><th>ПІБ</th><th>Спеціалізація</th><th>Категорія</th><th>Email</th></tr></thead>
+  <tbody>
+    {% for t in teachers %}
+      <tr>
+        <td><a href="{% url 'accounts:teacher_detail' t.pk %}">{{ t.user.full_name_uk }}</a></td>
+        <td>{{ t.specialization|default:"—" }}</td>
+        <td>{{ t.qualification_category|default:"—" }}</td>
+        <td>{{ t.user.email|default:"—" }}</td>
+      </tr>
+    {% empty %}<tr><td colspan="4">Список порожній</td></tr>{% endfor %}
+  </tbody>
+</table>
+{% endblock %}

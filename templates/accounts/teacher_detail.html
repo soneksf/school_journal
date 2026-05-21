@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}{{ teacher.user.full_name_uk }}{% endblock %}
+{% block content %}
+<h1>{{ teacher.user.full_name_uk }}</h1>
+<div class="card">
+  <p><strong>Табельний №:</strong> {{ teacher.employee_id }}</p>
+  <p><strong>Спеціалізація:</strong> {{ teacher.specialization|default:"—" }}</p>
+  <p><strong>Категорія:</strong> {{ teacher.qualification_category|default:"—" }}</p>
+  <p><strong>Прийнятий:</strong> {{ teacher.hired_at|default:"—" }}</p>
+  <p><strong>Біографія:</strong><br>{{ teacher.bio|linebreaks }}</p>
+</div>
+{% endblock %}

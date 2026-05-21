@@ -1,0 +1,77 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_NAME:-school_journal}
+      POSTGRES_USER: ${DB_USER:-school_user}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-change-me}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-school_user} -d ${DB_NAME:-school_journal}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  web:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      RUN_MIGRATIONS: "1"
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    expose:
+      - "8000"
+
+  celery:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    command: celery -A school_journal worker -l info --concurrency=2
+    volumes:
+      - media_volume:/app/media
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+
+  celery-beat:
+    build: .
+    restart: unless-stopped
+    env_file: .env
+    command: celery -A school_journal beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+      web: { condition: service_started }
+
+  nginx:
+    image: nginx:1.27-alpine
+    restart: unless-stopped
+    ports:
+      - "${NGINX_PORT:-80}:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - static_volume:/app/staticfiles:ro
+      - media_volume:/app/media:ro
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:
+  static_volume:
+  media_volume:

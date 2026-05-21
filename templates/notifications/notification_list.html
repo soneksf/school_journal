@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Сповіщення{% endblock %}
+{% block content %}
+<h1>Сповіщення</h1>
+<p>
+  <a class="btn btn-secondary" href="{% url 'notifications:mark_all_read' %}">Позначити всі як прочитані</a>
+</p>
+
+<table>
+  <thead><tr><th>Дата</th><th>Тип</th><th>Заголовок</th><th>Текст</th><th></th></tr></thead>
+  <tbody>
+    {% for n in notifications %}
+      <tr class="{% if not n.is_read %}unread{% endif %}">
+        <td>{{ n.created_at|date:"d.m.Y H:i" }}</td>
+        <td>{{ n.get_kind_display }}</td>
+        <td>{{ n.title }}</td>
+        <td>{{ n.body|truncatechars:120 }}</td>
+        <td>
+          {% if n.url %}
+            <a class="btn btn-sm" href="{% url 'notifications:mark_read' n.pk %}">Відкрити</a>
+          {% elif not n.is_read %}
+            <a class="btn btn-sm btn-secondary" href="{% url 'notifications:mark_read' n.pk %}">Прочитав</a>
+          {% endif %}
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5">Сповіщень немає.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

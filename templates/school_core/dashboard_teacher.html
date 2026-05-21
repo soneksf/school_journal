@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Кабінет вчителя{% endblock %}
+{% block content %}
+<h1>Вітаємо, {{ user.first_name }}!</h1>
+<p class="small">Сьогодні: {{ today|date:"d.m.Y" }}</p>
+
+<div class="row">
+  <div class="col card">
+    <h3>Мої класи</h3>
+    <ul>
+      {% for c in my_classes %}
+        <li><a href="{% url 'school_core:class_detail' c.pk %}">{{ c.short_name }}</a></li>
+      {% empty %}<li>Призначень ще немає.</li>{% endfor %}
+    </ul>
+  </div>
+  <div class="col card">
+    <h3>Швидкі дії</h3>
+    <p>
+      <a class="btn" href="{% url 'grades:grade_create' %}">+ Виставити оцінку</a>
+      <a class="btn btn-secondary" href="{% url 'attendance:absence_create' %}">+ Зафіксувати пропуск</a>
+    </p>
+  </div>
+</div>
+
+<div class="card">
+  <h3>Останні уроки</h3>
+  <table>
+    <thead><tr><th>Дата</th><th>№</th><th>Клас</th><th>Предмет</th><th>Тема</th></tr></thead>
+    <tbody>
+      {% for l in recent_lessons %}
+        <tr><td>{{ l.date }}</td><td>{{ l.period_number }}</td>
+            <td>{{ l.school_class.short_name }}</td><td>{{ l.subject.name }}</td>
+            <td>{{ l.topic|default:"—" }}</td></tr>
+      {% empty %}<tr><td colspan="5">Уроків поки немає.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

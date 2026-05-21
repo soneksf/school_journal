@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}{{ student.user.full_name_uk }}{% endblock %}
+{% block content %}
+<h1>{{ student.user.full_name_uk }}</h1>
+<p class="small">
+  Клас: <strong>{{ student.school_class.short_name|default:"—" }}</strong> ·
+  Особова справа: {{ student.student_id }} ·
+  Email: {{ student.user.email|default:"—" }} ·
+  Телефон: {{ student.user.phone|default:"—" }}
+</p>
+
+{% if user.is_teacher or user.is_superuser %}
+  <p>
+    <a class="btn" href="{% url 'grades:student_report' student.pk %}">Повний звіт</a>
+    <a class="btn btn-secondary" href="{% url 'ai_assistant:request_insight' student.pk %}">
+      Запросити AI-аналіз
+    </a>
+  </p>
+{% endif %}
+
+<div class="row">
+  <div class="col card">
+    <h3>Останні оцінки</h3>
+    <table>
+      <thead><tr><th>Дата</th><th>Предмет</th><th>Бал</th><th>Тип</th></tr></thead>
+      <tbody>
+        {% for g in grades %}
+          <tr>
+            <td>{{ g.date }}</td><td>{{ g.subject.name }}</td>
+            <td>
+              <span class="grade-pill {% if g.value <= 3 %}grade-low{% elif g.value <= 8 %}grade-mid{% else %}grade-high{% endif %}">
+                {{ g.value }}
+              </span>
+            </td>
+            <td>{{ g.get_kind_display }}</td>
+          </tr>
+        {% empty %}<tr><td colspan="4">Оцінок ще немає</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="col card">
+    <h3>Останні пропуски</h3>
+    <table>
+      <thead><tr><th>Дата</th><th>Предмет</th><th>Причина</th><th>Поважна</th></tr></thead>
+      <tbody>
+        {% for a in absences %}
+          <tr>
+            <td>{{ a.date }}</td><td>{{ a.subject.name|default:"—" }}</td>
+            <td>{{ a.get_reason_display }}</td>
+            <td>{% if a.is_excused %}✓{% else %}✗{% endif %}</td>
+          </tr>
+        {% empty %}<tr><td colspan="4">Пропусків немає</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

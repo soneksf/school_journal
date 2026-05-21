@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{{ school_class.short_name }}{% endblock %}
+{% block content %}
+<h1>Клас {{ school_class.short_name }}</h1>
+<p class="small">
+  Навчальний рік: {{ school_class.academic_year.name }} ·
+  Класний керівник: {{ school_class.homeroom_teacher.user.full_name_uk|default:"—" }}
+</p>
+
+<div class="row">
+  <div class="col card">
+    <h3>Учні ({{ students|length }})</h3>
+    <table>
+      <thead><tr><th>ПІБ</th><th></th></tr></thead>
+      <tbody>
+        {% for s in students %}
+          <tr><td>{{ s.user.full_name_uk }}</td>
+              <td><a class="btn btn-sm" href="{% url 'grades:student_report' s.pk %}">Звіт</a></td></tr>
+        {% empty %}<tr><td colspan="2">Учнів не призначено</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <div class="col card">
+    <h3>Предмети</h3>
+    <ul>{% for sub in subjects %}<li>{{ sub.name }}</li>{% empty %}<li>Не призначено</li>{% endfor %}</ul>
+  </div>
+</div>
+{% endblock %}

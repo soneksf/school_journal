@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Звіт: {{ student.user.full_name_uk }}{% endblock %}
+{% block content %}
+<h1>Табель учня</h1>
+<p>
+  <strong>{{ student.user.full_name_uk }}</strong> ·
+  Клас: {{ student.school_class.short_name|default:"—" }} ·
+  Всього оцінок: {{ total }} ·
+  Загальний середній: <strong>{{ overall_avg|default:"—" }}</strong>
+</p>
+
+{% for row in summary %}
+  <div class="card">
+    <h3>{{ row.subject.name }}</h3>
+    <p class="small">
+      Кількість: {{ row.count }} · Середній: <strong>{{ row.avg }}</strong> ·
+      Мін: {{ row.min }} · Макс: {{ row.max }}
+    </p>
+    <table>
+      <thead><tr><th>Дата</th><th>Тип</th><th>Бал</th><th>Коментар</th></tr></thead>
+      <tbody>
+        {% for g in row.grades %}
+          <tr>
+            <td>{{ g.date }}</td>
+            <td>{{ g.get_kind_display }}</td>
+            <td>
+              <span class="grade-pill {% if g.value <= 3 %}grade-low{% elif g.value <= 8 %}grade-mid{% else %}grade-high{% endif %}">
+                {{ g.value }}
+              </span>
+            </td>
+            <td>{{ g.comment|default:"—" }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% empty %}
+  <p>Оцінок не виставлено.</p>
+{% endfor %}
+{% endblock %}
