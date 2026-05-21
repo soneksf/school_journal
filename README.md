@@ -39,28 +39,6 @@ docker compose exec web python manage.py collectstatic --noinput
 
 Застосунок відкриється на http://localhost/. Адмінка — http://localhost/admin/.
 
-## Локальний запуск (без Docker)
-
-```bash
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env
-# Для локалу можна перемикнутися на SQLite:
-#   DB_ENGINE=django.db.backends.sqlite3
-
-python manage.py migrate
-python manage.py createsuperuser
-python manage.py seed_demo
-python manage.py runserver
-```
-
-В окремих терміналах (для Celery):
-
-```bash
-celery -A school_journal worker -l info
-celery -A school_journal beat -l info        # періодичні задачі
-```
-
 ## Тести
 
 ```bash
@@ -73,15 +51,6 @@ python manage.py test
 pip install pytest-django
 pytest
 ```
-
-## Безпека
-
-- Усі секрети — у `.env` (НЕ комітимо у Git, див. `.gitignore`)
-- CSRF — увімкнено за замовчуванням
-- SQL-ін'єкції — захищено через Django ORM
-- `ALLOWED_HOSTS`, `SECRET_KEY` — з env
-- HTTPS-готовність: `SECURE_SSL_REDIRECT`, `SESSION_COOKIE_SECURE`, `CSRF_COOKIE_SECURE`, `HSTS` — конфігуруються env-змінними
-- Перевірки прав доступу через `LoginRequiredMixin` та `RoleRequiredMixin`
 
 ## AI-агент
 
